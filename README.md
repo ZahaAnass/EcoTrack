@@ -1,1 +1,126 @@
-# EcoTrack
+# Cahier de charge - Système de calcul de consommation d’électricité
+
+## 1. Informations générales
+
+* **Nom du projet :** EcoTrack
+* **Objectif :** Créer un système pour calculer la consommation d'électricité pour 10 compteurs, gérer les périodes et les prix fixes, permettre à l’admin de suivre toutes les informations et statistiques, et permettre aux techniciens de saisir les données.
+* **Version :** 1.0
+* **Date de début :** 13/10/2025
+
+---
+
+## 2. Parties prenantes
+
+### **1. Admin :**
+
+* Peut consulter toutes les données.
+* Peut ajouter, modifier et supprimer les utilisateurs et techniciens.
+* Suivi des utilisateurs et techniciens.
+* Visualisation des statistiques et rapports.
+* Gestion des utilisateurs et rôles.
+* Calcul automatique de la consommation d’électricité pour chaque compteur.
+* Calcul du coût selon la période et le prix fixé.
+* Visualisation des statistiques et graphiques.
+* Export des données en Excel ou PDF.
+* Savoir quel technicien a saisi les données.
+* Gestion des prix par période.
+* Chaque période dans la table contient trois colonnes :
+
+  * **Consommation du période actuelle**
+  * **Consommation calculée** (consommation = consommation_actuelle - consommation_période_précédente)
+  * **Prix à payer** (consommation × prix_unitaire)
+
+### **2. Technicien / Utilisateur :**
+
+* Saisit les données de consommation d’électricité.
+* Remplit les valeurs pour la période définie.
+
+---
+
+## 3. Contexte du projet
+
+Ce projet s’inscrit dans le cadre de l’optimisation de la gestion énergétique.
+Chaque centre dispose d’un compteur électrique, et le système permettra de centraliser les données pour un suivi précis de la consommation et des coûts.
+
+---
+
+## 4. Objectifs spécifiques
+
+* Automatiser le calcul de la consommation et du coût.
+* Éviter les erreurs manuelles dans le suivi des compteurs.
+* Générer des rapports et statistiques mensuelles.
+
+---
+
+## 5. Exigences non-fonctionnelles (qualité)
+
+* **Performance :** Les graphiques doivent se charger en moins de 5 secondes.
+* **Sécurité :** Les données doivent être protégées par JWT et chiffrées.
+* **Accessibilité :** Interface responsive (mobile & desktop).
+
+---
+
+## 6. Fonctions principales
+
+* Connexion et déconnexion des utilisateurs.
+* Gestion des utilisateurs et rôles (Admin / Technicien).
+* Saisie des données par les techniciens.
+* Calcul automatique de la consommation pour chaque compteur.
+* Calcul du coût selon la période et le prix fixe.
+* Visualisation des statistiques et graphiques pour l’admin.
+* Export des données en Excel ou PDF.
+* Gestion des prix fixes par période.
+
+---
+
+## 7. Périodes temporelles
+
+* **Période 1 :** de 8h à 17h
+* **Période 2 :** de 17h à 22h
+* **Période 3 :** de 22h à 8h
+
+Chaque période possède un **prix fixe** appliqué à la consommation enregistrée.
+
+---
+
+## 8. Exigences techniques
+
+* **Frontend :** Next.js + Shadcn UI
+* **Backend :** Node.js + Express.js + MongoDB
+* **Rapports :** Graphiques ou tableaux statistiques
+* **Sécurité :** Authentification via JWT
+* **Stockage :** MongoDB pour toutes les données
+
+---
+
+## 9. UML et Documentation
+
+* **Diagramme de classes :**
+
+  * `Admin`
+  * `Technician`
+  * `Meter`
+  * `ConsumptionRecord`
+  * `Period`
+
+* **Diagramme de séquence :**
+
+  * Processus de saisie des données par le technicien et calcul automatique traité par l’admin.
+
+* **Rôles et permissions :**
+
+  * **Admin :** CRUD complet sur toutes les données.
+  * **Technician :** Ajout et modification de ses propres données uniquement.
+
+---
+
+## 10. Remarques
+
+* Le système doit être flexible pour modifier les **prix des périodes** à tout moment.
+* L’application doit garantir une traçabilité complète de toutes les saisies effectuées.
+
+---
+
+## 11. Conclusion
+
+Ce projet vise à offrir un système centralisé de gestion de la consommation d’électricité pour plusieurs centres, garantissant un suivi précis, une facturation automatique et une analyse efficace des coûts énergétiques.
