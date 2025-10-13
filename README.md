@@ -11,7 +11,7 @@
 
 ## 2. Parties prenantes
 
-### **1. Admin :**
+### **1. Superviseur :**
 
 * Peut consulter toutes les données.
 * Peut ajouter, modifier et supprimer les utilisateurs et techniciens.
@@ -24,16 +24,20 @@
 * Export des données en Excel ou PDF.
 * Savoir quel technicien a saisi les données.
 * Gestion des prix par période.
-* Chaque période dans la table contient trois colonnes :
+* Chaque période dans la tableaux contient trois colonnes :
 
   * **Consommation du période actuelle**
   * **Consommation calculée** (consommation = consommation_actuelle - consommation_période_précédente)
   * **Prix à payer** (consommation × prix_unitaire)
 
-### **2. Technicien / Utilisateur :**
+### **2. Technicien :**
 
 * Saisit les données de consommation d’électricité.
 * Remplit les valeurs pour la période définie.
+
+### **3. Utilisateur :**
+
+* Visualisation des données.
 
 ---
 
@@ -97,11 +101,42 @@ Chaque période possède un **prix fixe** appliqué à la consommation enregistr
 
 * **Diagramme de classes :**
 
-  * `Admin`
-  * `Technician`
-  * `Meter`
-  * `ConsumptionRecord`
-  * `Period`
+    ```typescript
+      `User`: {
+          id: ObjectId,
+          nom: string,
+          prenom: string,
+          numero: string,
+          password: string,
+          role: enum("admin", "technicien", "utilisateur")
+      }
+
+      `Meter`: {
+          id: ObjectId,
+          nom: string,              // Exemple : "Chambre froide", "Clim Terrasse"
+          localisation: string,     // Exemple : "RDC", "Mezzanine"
+      }
+
+      `ConsumptionRecord`: {
+          id: ObjectId,
+          meter_id: ObjectId,           // Référence au compteur concerné
+          utilisateur: ObjectId,        // Référence au technicien
+          date: Date,                   // Date et Temps du saisie
+          consommation_actuelle: number,
+          consommation_precedente: number,
+          consommation_calculee: number, // automatique : actuelle - précédente
+          prix_unitaire: number,         // lié à la période
+          montant_total: number          // consommation_calculee * prix_unitaire
+      }
+
+      `Period`: {
+          id: ObjectId,
+          nom: string,              // Exemple : "Période 1"
+          prix: number,
+          heure_debut: string,      // "08:00"
+          heure_fin: string         // "17:00"
+      }
+    ```
 
 * **Diagramme de séquence :**
 
@@ -111,6 +146,7 @@ Chaque période possède un **prix fixe** appliqué à la consommation enregistr
 
   * **Admin :** CRUD complet sur toutes les données.
   * **Technician :** Ajout et modification de ses propres données uniquement.
+  * **Utilisateur :** Visualisation des données.
 
 ---
 
@@ -124,3 +160,18 @@ Chaque période possède un **prix fixe** appliqué à la consommation enregistr
 ## 11. Conclusion
 
 Ce projet vise à offrir un système centralisé de gestion de la consommation d’électricité pour plusieurs centres, garantissant un suivi précis, une facturation automatique et une analyse efficace des coûts énergétiques.
+
+## meter names
+
+from 1er to 8er
+chambre froid
+RDC(re de chause)
+mezianine
+clim teras
+cuisine RDC
+clim mezianine
+choufrie
+C.G (compteur general)
+General 1
+General 2
+General 3
