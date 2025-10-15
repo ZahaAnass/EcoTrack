@@ -3,13 +3,20 @@
 ## 1. Informations générales
 
 * **Nom du projet :** EcoTrack
-* **Objectif :** Créer un système pour calculer la consommation d'électricité pour 10 compteurs, gérer les périodes et les prix fixes, permettre à l’admin de suivre toutes les informations et statistiques, et permettre aux techniciens de saisir les données.
+* **Objectif :** Créer un système qui permet de recueillir les données et calculer la consommation d'électricité pour 10 compteurs, gérer les périodes et les prix fixes, permettre à l’admin de suivre les statistiques via un tableau de bord.
 * **Version :** 1.0
 * **Date de début :** 13/10/2025
 
 ---
 
-## 2. Parties prenantes
+## 2. Contexte du projet
+
+Ce projet s’inscrit dans le cadre de l’optimisation de la gestion énergétique.
+Chaque centre dispose d’un compteur électrique, et le système permettra de centraliser les données pour un suivi précis de la consommation et des coûts.
+
+---
+
+## 3. Parties prenantes
 
 ### **1. Superviseur :**
 
@@ -41,13 +48,6 @@
 
 ---
 
-## 3. Contexte du projet
-
-Ce projet s’inscrit dans le cadre de l’optimisation de la gestion énergétique.
-Chaque centre dispose d’un compteur électrique, et le système permettra de centraliser les données pour un suivi précis de la consommation et des coûts.
-
----
-
 ## 4. Objectifs spécifiques
 
 * Automatiser le calcul de la consommation et du coût.
@@ -64,20 +64,7 @@ Chaque centre dispose d’un compteur électrique, et le système permettra de c
 
 ---
 
-## 6. Fonctions principales
-
-* Connexion et déconnexion des utilisateurs.
-* Gestion des utilisateurs et rôles (Admin / Technicien).
-* Saisie des données par les techniciens.
-* Calcul automatique de la consommation pour chaque compteur.
-* Calcul du coût selon la période et le prix fixe.
-* Visualisation des statistiques et graphiques pour l’admin.
-* Export des données en Excel ou PDF.
-* Gestion des prix fixes par période.
-
----
-
-## 7. Périodes temporelles
+## 6. Périodes temporelles
 
 * **Période 1 :** de 8h à 17h
 * **Période 2 :** de 17h à 22h
@@ -87,7 +74,7 @@ Chaque période possède un **prix fixe** appliqué à la consommation enregistr
 
 ---
 
-## 8. Exigences techniques
+## 7. Exigences techniques
 
 * **Frontend :** Next.js + Shadcn UI
 * **Backend :** Node.js + Express.js + MongoDB
@@ -97,7 +84,7 @@ Chaque période possède un **prix fixe** appliqué à la consommation enregistr
 
 ---
 
-## 9. UML et Documentation
+## 8. UML et Documentation
 
 * **Diagramme de classes :**
 
