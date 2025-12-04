@@ -5,7 +5,7 @@
 * **Nom du projet :** EcoTrack
 * **Objectif :** Créer un système qui permet de recueillir les données et calculer la consommation d'électricité pour 10 compteurs, gérer les périodes et les prix fixes, permettre à l’admin de suivre les statistiques via un tableau de bord.
 * **Version :** 1.0
-* **Date de début :** 13/10/2025
+* **Date de début :** 04/12/2025
 
 ---
 
