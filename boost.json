@@ -1,0 +1,15 @@
+{
+    "agents": [
+        "copilot",
+        "cursor",
+        "phpstorm"
+    ],
+    "editors": [
+        "cursor",
+        "phpstorm",
+        "vscode"
+    ],
+    "guidelines": [
+        "laravel/fortify"
+    ]
+}
