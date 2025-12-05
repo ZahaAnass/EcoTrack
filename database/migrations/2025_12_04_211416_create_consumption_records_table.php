@@ -26,6 +26,8 @@ return new class extends Migration
             $table->decimal("unit_price", 10, 2); // snapshot of the unit price at the time of recording
             $table->decimal("total_amount", 12, 2); // calculated_value * unit_price
 
+            $table->enum('status', ['approved', 'pending', 'rejected'])->default('pending');
+
             $table->timestamps();
         });
     }

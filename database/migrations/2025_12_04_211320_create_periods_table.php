@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('periods', function (Blueprint $table) {
             $table->id();
             $table->string("name");
-            $table->date("start_time");
-            $table->date("end_time");
+            $table->time("start_time");
+            $table->time("end_time");
             $table->decimal("unit_price", 10, 2);
             $table->timestamps();
         });
