@@ -15,8 +15,14 @@ class ConsumptionController extends Controller
         return Inertia::render('technician/dashboard', [
             'metersCount' => Meter::count(),
             'myEntriesCount' => ConsumptionRecord::where('user_id', auth()->id())->count(),
+            'recentEntries' => ConsumptionRecord::where('user_id', auth()->id())
+                ->with(['meter', 'period'])
+                ->latest()
+                ->take(10)
+                ->get(),
         ]);
     }
+
 
     // Show form to add consumption
     public function create()
