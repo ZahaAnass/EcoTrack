@@ -23,10 +23,29 @@ class MeterSeeder extends Seeder
             "General 3",
         ];
 
-        foreach ($meters as $meter) {
+        /** @var array<int,string> $locations */
+        $locations = [
+            "kitchen",
+            "living room",
+            "bedroom",
+            "bathroom",
+            "garage",
+            "garden",
+            "basement",
+            "attic",
+            "dining room",
+            "office",
+            "hallway",
+        ];
+
+        $locationCount = count($locations);
+
+        foreach ($meters as $index => $meter) {
+            $assignedLocation = $locations[$index % $locationCount];
+
             Meter::create([
                 'name' => $meter,
-                'location' => 'Unknown',
+                'location' => $assignedLocation,
             ]);
         }
     }

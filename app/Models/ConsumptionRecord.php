@@ -19,6 +19,7 @@ class ConsumptionRecord extends Model
         'calculated_value',
         'unit_price',
         'total_amount',
+        'user_id',
     ];
 
     protected array $dates = ['reading_date'];

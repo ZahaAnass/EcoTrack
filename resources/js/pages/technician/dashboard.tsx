@@ -96,28 +96,25 @@ export default function Dashboard({ metersCount, myEntriesCount, recentEntries }
                     </Card>
                 </div>
                 {/* ===== RECENT ENTRIES SECTION ===== */}
-                <div className="rounded-xl border p-4 border-sidebar-border/70 bg-white dark:bg-neutral-900 dark:border-sidebar-border">
+                <div className="rounded-xl border p-4 border-neutral-200 dark:border-neutral-800">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-semibold">Recent Entries</h2>
 
-                        <Link
-                            href="/consumptions/mine"
-                            className="text-sm underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-                        >
-                            View All
-                        </Link>
+                        <Button asChild>
+                            <Link href="/consumptions/mine">View All</Link>
+                        </Button>
                     </div>
 
                     {/* TABLE */}
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="bg-neutral-100 dark:bg-neutral-900/50">
                                 <TableRow>
-                                    <TableHead>Meter</TableHead>
-                                    <TableHead>Period</TableHead>
-                                    <TableHead>Value</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Date</TableHead>
+                                    <TableHead className="font-semibold">Meter</TableHead>
+                                    <TableHead className="font-semibold">Period</TableHead>
+                                    <TableHead className="font-semibold">Value</TableHead>
+                                    <TableHead className="font-semibold">Status</TableHead>
+                                    <TableHead className="font-semibold">Date</TableHead>
                                 </TableRow>
                             </TableHeader>
 
@@ -125,7 +122,10 @@ export default function Dashboard({ metersCount, myEntriesCount, recentEntries }
                                 {/* Empty state */}
                                 {recentEntries.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center py-6 text-neutral-500">
+                                        <TableCell
+                                            colSpan={5}
+                                            className="text-center py-6 text-neutral-500"
+                                        >
                                             No entries found.
                                         </TableCell>
                                     </TableRow>
@@ -133,24 +133,46 @@ export default function Dashboard({ metersCount, myEntriesCount, recentEntries }
 
                                 {/* Entries */}
                                 {recentEntries.map((entry) => (
-                                    <TableRow key={entry.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/40">
-                                        <TableCell className="font-medium">{entry.meter.name}</TableCell>
-                                        <TableCell>{entry.period.name}</TableCell>
-                                        <TableCell className="font-semibold">{entry.current_value} Kw</TableCell>
+                                    <TableRow
+                                        key={entry.id}
+                                        className="transition hover:bg-neutral-50 dark:hover:bg-neutral-900/40"
+                                    >
+                                        <TableCell className="font-medium capitalize">
+                                            {entry.meter.name}
+                                        </TableCell>
+
+                                        <TableCell className="capitalize">
+                                            {entry.period.name}
+                                        </TableCell>
+
+                                        <TableCell className="font-semibold">
+                                            {entry.current_value} Kw
+                                        </TableCell>
 
                                         <TableCell>
                                             {entry.status === "pending" && (
-                                                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="bg-yellow-100 text-yellow-800 border-yellow-300"
+                                                >
                                                     Pending
                                                 </Badge>
                                             )}
+
                                             {entry.status === "approved" && (
-                                                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="bg-green-100 text-green-800 border-green-300"
+                                                >
                                                     Approved
                                                 </Badge>
                                             )}
+
                                             {entry.status === "rejected" && (
-                                                <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="bg-red-100 text-red-800 border-red-300"
+                                                >
                                                     Rejected
                                                 </Badge>
                                             )}
