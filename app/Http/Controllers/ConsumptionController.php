@@ -52,20 +52,35 @@ class ConsumptionController extends Controller
         $period = Period::findOrFail($data['period_id']);
 
         // Get previous record for this meter
-        $previous = ConsumptionRecord::where('meter_id', $meter->id)
+        $previous = ConsumptionRecord::where([
+                'meter_id' => $meter->id,
+                "status" => 'approved'
+            ])
             ->latest('created_at')
             ->first();
 
-        $previousValue = $previous->consumption_current ?? 0;
+        $previousValue = $previous->current_value ?? 0;
 
         if ($data['consumption_current'] <= $previousValue) {
             return back()->withErrors([
-                'consumption_current' => 'Current consumption must be greater than the previous consumption value (' . $previousValue . ').'
+                'consumption_current' => 'Current consumption must be greater than the previous consumption value (' . $previousValue . 'Kw ).'
+            ])->withInput();
+        }
+
+        if ($previousValue > 0 && $data["consumption_current"] > $previousValue + 300) {
+            return back()->withErrors([
+                'consumption_current' => 'Current consumption exceeds the maximum allowed increment of ' . 300 . ' from the previous value (' . $previousValue . 'Kw ).'
             ])->withInput();
         }
 
         // Calculate the difference
         $calc = $data['consumption_current'] - $previousValue;
+
+        if ($calc < 0) {
+            return back()->withErrors([
+                'consumption_current' => 'Calculated consumption cannot be negative.'
+            ])->withInput();
+        }
 
         // Create record
         ConsumptionRecord::create([
@@ -85,25 +100,37 @@ class ConsumptionController extends Controller
             ->with('message', 'Consumption recorded successfully.');
     }
 
-    // List own entries
-    public function myEntries()
+    public function myEntries(Request $request)
     {
-//        $records = ConsumptionRecord::where('user_id', auth()->id())
-//            ->with('meter', 'period')
-//            ->paginate(10)
-//            ->onEachSide(1);
-
-        $records = ConsumptionRecord::with(['meter','period'])
+        $query = ConsumptionRecord::with(['meter', 'period'])
             ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(10)
-        ->onEachSide(1);
+            ->latest();
 
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->whereHas('meter', function ($q) use ($search) {
+                $q->where('serial_number', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('period_id')) {
+            $query->where('period_id', $request->period_id);
+        }
+
+        $records = $query->paginate(10)->onEachSide(1);
 
         return Inertia::render('technician/myEntries', [
             'records' => $records,
+            'filters' => $request->only(['search', 'status', 'period_id']),
+            'periods' => Period::all(),
         ]);
-
     }
+
 
 }
