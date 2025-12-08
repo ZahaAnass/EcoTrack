@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\TechnicianConsumptionController;
+use App\Http\Controllers\UserConsumptionController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -13,12 +14,30 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
+
+        $user = auth()->user();
+
+        if ($user->role == 'technician') {;
+            return redirect()->route('technician.dashboard');
+        }
+
+        if ($user->role == 'user') {
+            return redirect()->route('user.dashboard');
+        }
+
+        if ($user->role == 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
         return Inertia::render('dashboard');
+
     })->name('dashboard');
 });
 
+
 // Technician Routes
-Route::middleware(['auth', 'verified', 'role:technician'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:technician'])
+    ->prefix("technician")->name("technician.")->group(function () {
 
     // Technician dashboard
     Route::get('/dashboard', [TechnicianConsumptionController::class, 'dashboard'])
@@ -143,22 +162,21 @@ Route::middleware(['auth', 'verified', 'role:technician'])->group(function () {
 //        ->name('admin.technicians.index');
 //
 //});
-//
-//// Normal User Routes
-//Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
-//
-//    Route::get('/dashboard', function () {
-//        return Inertia::render('User/Dashboard');
-//    })->name('user.dashboard');
-//
-//    // Read-only list of consumptions
-//    Route::get('/consumptions', [ConsumptionController::class, 'userIndex'])
-//        ->name('user.consumptions.index');
-//
-//    // View single consumption entry
-//    Route::get('/consumptions/{record}', [ConsumptionController::class, 'show'])
-//        ->name('user.consumptions.show');
-//});
-//
+
+// Normal User Routes
+Route::middleware(['auth', 'verified', 'role:user'])->prefix("user")->name("user.")->group(function () {
+
+    Route::get('/dashboard', [UserConsumptionController::class, 'dashboard'])
+        ->name('dashboard');
+
+    // Read-only list of consumptions
+    Route::get('/consumptions', [UserConsumptionController::class, 'index'])
+        ->name('user.consumptions.index');
+
+    // View single consumption entry
+    Route::get('/consumptions/{record}', [UserConsumptionController::class, 'show'])
+        ->name('user.consumptions.show');
+});
+
 
 require __DIR__.'/settings.php';
