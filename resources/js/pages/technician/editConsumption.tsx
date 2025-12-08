@@ -36,9 +36,9 @@ type EditProps = {
 export default function EditConsumption({ meters, periods, entry }: EditProps) {
 
     const { data, setData, put, processing, errors } = useForm({
-        meter_id: entry.meter_id.toString(),
-        period_id: entry.period_id.toString(),
-        consumption_current: entry.consumption_current.toString(),
+        meter_id: entry.meter_id,
+        period_id: entry.period_id,
+        consumption_current: entry.consumption_current,
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,7 +84,7 @@ export default function EditConsumption({ meters, periods, entry }: EditProps) {
                                         {meters.map(meter => (
                                             <SelectItem
                                                 key={meter.id}
-                                                value={meter.id.toString()}
+                                                value={meter.id}
                                             >
                                                 {meter.name} - {meter.location}
                                             </SelectItem>
@@ -106,7 +106,7 @@ export default function EditConsumption({ meters, periods, entry }: EditProps) {
 
                                     <SelectContent>
                                         {periods.map(period => (
-                                            <SelectItem key={period.id} value={period.id.toString()}>
+                                            <SelectItem key={period.id} value={period.id}>
                                                 {period.name}
                                             </SelectItem>
                                         ))}

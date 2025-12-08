@@ -106,6 +106,8 @@ export default function MyEntries({ records, filters, periods }: Props) {
         }
     }, [flash.message]);
 
+    // @ts-ignore
+    // @ts-ignore
     return (
         <AppLayout breadcrumbs={[{ title: "My Entries", href: "/consumptions/mine" }]}>
             <Head title="My Entries" />
@@ -154,7 +156,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
 
 
                         <Select
-                            defaultValue={filters.period_id?.toString() ?? "all"}
+                            defaultValue={filters.period_id ?? "all"}
                             onValueChange={(value) =>
                                 router.get(
                                     "/consumptions/mine",
