@@ -30,8 +30,8 @@ export const navigation: Record<string, NavItem[]> = {
     ],
 
     user: [
-        { title: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-        { title: "History", href: "/history", icon: History },
-        { title: "Reports", href: "/reports", icon: BarChart3 },
+        { title: "Dashboard", href: "/user/dashboard", icon: LayoutGrid },
+        { title: "History", href: "/user/consumptions", icon: History },
+        { title: "Reports", href: "/user/reports", icon: BarChart3 },
     ],
 };
