@@ -24,6 +24,60 @@ class ConsumptionController extends Controller
         ]);
     }
 
+    public function destroy(ConsumptionRecord $record)
+    {
+        if ($record->user_id !== auth()->id()) {
+            return redirect()
+                ->back()
+                ->withErrors('You are not authorized to delete this record.');
+        }
+
+        $record->delete();
+
+        return back();
+    }
+
+    public function edit(ConsumptionRecord $record)
+    {
+
+        if ($record->user_id !== auth()->id()) {
+            return redirect()
+                ->back()
+                ->withErrors('You are not authorized to edit this record.');
+        }
+
+        return Inertia::render('technician/editConsumption', [
+            'entry'   => $record,
+            'meters'  => Meter::all(),
+            'periods' => Period::all(),
+        ]);
+    }
+
+    public function update(Request $request, ConsumptionRecord $record)
+    {
+
+        if ($record->user_id !== auth()->id()) {
+            return redirect()
+                ->back()
+                ->withErrors('You are not authorized to update this record.');
+        }
+
+        $data = $request->validate([
+            'meter_id' => 'required|exists:meters,id',
+            'period_id' => 'required|exists:periods,id',
+            'consumption_current' => 'required|numeric|min:0',
+        ]);
+
+        $record->update([
+            'meter_id' => $data['meter_id'],
+            'period_id' => $data['period_id'],
+            'current_value' => $data['consumption_current'],
+        ]);
+
+        return redirect()
+            ->route('consumptions.mine')
+            ->with('message', 'Consumption updated successfully.');
+    }
 
     // Show form to add consumption
     public function create()
@@ -131,6 +185,5 @@ class ConsumptionController extends Controller
             'periods' => Period::all(),
         ]);
     }
-
 
 }

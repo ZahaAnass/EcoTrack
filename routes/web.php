@@ -18,15 +18,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Technician Routes
-Route::middleware(['auth', 'verified', "role:technician"])->group(function () {
-    Route::get('/dashboard', [ConsumptionController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['auth', 'verified', 'role:technician'])->group(function () {
 
-    // Add consumption
-    Route::get('/consumptions/create', [ConsumptionController::class, 'create'])->name('consumptions.create');
-    Route::post('/consumptions', [ConsumptionController::class, 'store'])->name('consumptions.store');
+    // Technician dashboard
+    Route::get('/dashboard', [ConsumptionController::class, 'dashboard'])
+        ->name('dashboard');
 
-    // View own entries
-    Route::get('/consumptions/mine', [ConsumptionController::class, 'myEntries'])->name('consumptions.mine');
+    Route::get('/consumptions/mine', [ConsumptionController::class, 'myEntries'])
+        ->name('consumptions.mine');
+
+    Route::get('/consumptions/create', [ConsumptionController::class, 'create'])
+        ->name('consumptions.create');
+
+    Route::post('/consumptions', [ConsumptionController::class, 'store'])
+        ->name('consumptions.store');
+
+    Route::get('/consumptions/{record}/edit', [ConsumptionController::class, 'edit'])
+        ->name('consumptions.edit');
+
+    Route::put('/consumptions/{record}', [ConsumptionController::class, 'update'])
+        ->name('consumptions.update');
+
+    Route::delete('/consumptions/{record}', [ConsumptionController::class, 'destroy'])
+        ->name('consumptions.destroy');
 });
 
 require __DIR__.'/settings.php';

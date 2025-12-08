@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ConsumptionRecord extends Model
 {
 //    use HasFactory;
-
     protected $fillable = [
         'meter_id',
         'technician_id',
