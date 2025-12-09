@@ -2,48 +2,39 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Default test users
-        User::firstOrCreate(
-            ['email' => 'admin@gmail.com'],
-            [
-                'name' => 'Admin User',
-                'role' => 'admin',
-                'password' => bcrypt('password1234'),
-                'email_verified_at' => now(),
-            ]
-        );
-
-        User::firstOrCreate(
-            ['email' => 'tech@gmail.com'],
-            [
-                'name' => 'Technician',
-                'role' => 'technician',
-                'password' => bcrypt('password1234'),
-                'email_verified_at' => now(),
-            ]
-        );
-
-        User::firstOrCreate(
-            ['email' => 'user@gmail.com'],
-            [
-                'name' => 'Regular User',
-                'role' => 'user',
-                'password' => bcrypt('password1234'),
-                'email_verified_at' => now(),
-            ]
-        );
-
-        User::factory()->count(3)->create([
+        // Admin, technician, normal user
+        User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@gmail.com',
+            'role' => 'admin',
             'password' => bcrypt('password1234'),
         ]);
 
+        User::factory()->create([
+            'name' => 'Technician',
+            'email' => 'tech@gmail.com',
+            'role' => 'technician',
+            'password' => bcrypt('password1234'),
+        ]);
+
+        User::factory()->create([
+            'name' => 'Regular User',
+            'email' => 'user@gmail.com',
+            'role' => 'user',
+            'password' => bcrypt('password1234'),
+        ]);
+
+        // extra fake users
+        User::factory()->count(3)->create();
+
+        // Seed base data
         $this->call([
             MeterSeeder::class,
             PeriodSeeder::class,

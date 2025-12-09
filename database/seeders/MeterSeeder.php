@@ -10,14 +10,14 @@ class MeterSeeder extends Seeder
     public function run(): void
     {
         $meters = [
-            "chambre froid",
+            "Chambre froid",
             "RDC",
-            "mezzanine",
-            "clim teras",
-            "cuisine RDC",
-            "clim mezzanine",
-            "choufrie",
-            "C.G",
+            "Mezzanine",
+            "Clim teras",
+            "Cuisine RDC",
+            "Clim mezzanine",
+            "Chouferiez",
+            "Compter Général",
             "General 1",
             "General 2",
             "General 3",
