@@ -176,6 +176,10 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix("user")->name("user
     // View single consumption entry
     Route::get('/consumptions/{record}', [UserConsumptionController::class, 'show'])
         ->name('user.consumptions.show');
+
+    // Reports
+    Route::get('/reports', [UserConsumptionController::class, 'reports'])
+        ->name('user.reports.index');
 });
 
 

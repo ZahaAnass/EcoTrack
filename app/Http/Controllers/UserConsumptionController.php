@@ -78,4 +78,36 @@ class UserConsumptionController extends Controller
             'user' => $user,
         ]);
     }
+
+    public function reports(Request $request)
+    {
+        $filters = $request->only(['period_id', 'meter_id']);
+
+        $query = ConsumptionRecord::with(['meter', 'period'])
+            ->where('status', 'approved');
+
+        // Filter by period
+        if (!empty($request->period_id) && $request->period_id !== 'all') {
+            $query->where('period_id', $request->period_id);
+        }
+
+        // Filter by meter
+        if (!empty($request->meter_id) && $request->meter_id !== 'all') {
+            $query->where('meter_id', $request->meter_id);
+        }
+
+        $records = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        // Optional: total consumption and amount for selected filters
+        $totals = $query->clone()->selectRaw('SUM(current_value) as total_value, SUM(total_amount) as total_amount')->first();
+
+        return Inertia::render('user/reports', [
+            'records' => $records,
+            'filters' => $filters,
+            'periods' => Period::all(),
+            'meters' => Meter::all(),
+            'totals' => $totals,
+        ]);
+    }
+
 }
