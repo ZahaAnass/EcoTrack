@@ -81,25 +81,51 @@ class UserConsumptionController extends Controller
 
     public function reports(Request $request)
     {
-        $filters = $request->only(['period_id', 'meter_id']);
+        $filters = $request->only(['period_id', 'meter_id', 'date', 'range_start', 'range_end']);
 
         $query = ConsumptionRecord::with(['meter', 'period'])
             ->where('status', 'approved');
 
-        // Filter by period
+        // DATE FILTERS
+        if ($request->date === 'day') {
+            $query->whereDate('created_at', today());
+        }
+
+        if ($request->date === 'week') {
+            $query->whereBetween('created_at', [
+                now()->startOfWeek(),
+                now()->endOfWeek(),
+            ]);
+        }
+
+        if ($request->date === 'month') {
+            $query->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year);
+        }
+
+        // CUSTOM RANGE
+        if ($request->filled('range_start') && $request->filled('range_end')) {
+            $query->whereBetween('created_at', [
+                $request->range_start . " 00:00:00",
+                $request->range_end . " 23:59:59"
+            ]);
+        }
+
+        // PERIOD FILTER
         if (!empty($request->period_id) && $request->period_id !== 'all') {
             $query->where('period_id', $request->period_id);
         }
 
-        // Filter by meter
+        // METER FILTER
         if (!empty($request->meter_id) && $request->meter_id !== 'all') {
             $query->where('meter_id', $request->meter_id);
         }
 
         $records = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
-        // Optional: total consumption and amount for selected filters
-        $totals = $query->clone()->selectRaw('SUM(current_value) as total_value, SUM(total_amount) as total_amount')->first();
+        $totals = $query->clone()
+            ->selectRaw('SUM(current_value) as total_value, SUM(total_amount) as total_amount')
+            ->first();
 
         return Inertia::render('user/reports', [
             'records' => $records,

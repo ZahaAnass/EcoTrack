@@ -1,14 +1,16 @@
 import AppLayout from "@/layouts/app-layout";
 import { Head, router } from "@inertiajs/react";
-import { useRef } from "react";
-import { debounce } from "lodash";
 
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import InertiaPagination from "@/components/inertia-pagination";
+
+import {
+    BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart
+} from "recharts";
+
 
 type Meter = { id: number; name: string };
 type Period = { id: number; name: string };
@@ -27,6 +29,14 @@ type Totals = {
     total_amount: number;
 };
 
+type Filter = {
+    period_id?: string;
+    meter_id?: string;
+    date?: string;
+    range_start?: string;
+    range_end?: string;
+};
+
 type Props = {
     records: {
         data: Record[];
@@ -35,7 +45,7 @@ type Props = {
         to: number | null;
         total: number;
     };
-    filters: { period_id?: string; meter_id?: string };
+    filters: Filter;
     periods: Period[];
     meters: Meter[];
     totals: Totals;
@@ -49,6 +59,12 @@ export default function Reports({ records, filters, periods, meters, totals }: P
             { preserveState: true, replace: true }
         );
     };
+
+    const chartData = records.data.map(r => ({
+        name: new Date(r.created_at).toLocaleDateString(),
+        consumption: r.current_value,
+        amount: r.total_amount,
+    }));
 
     return (
         <AppLayout breadcrumbs={[{ title: "Reports", href: "/user/reports" }]}>
@@ -81,6 +97,48 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                                 {meters.map((m) => <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
+
+                        <Select
+                            defaultValue={filters.date ?? "all"}
+                            onValueChange={(value) => handleFilterChange("date", value)}
+                        >
+                            <SelectTrigger className="w-40">
+                                <SelectValue placeholder="Date Filter" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Dates</SelectItem>
+                                <SelectItem value="day">Today</SelectItem>
+                                <SelectItem value="week">This Week</SelectItem>
+                                <SelectItem value="month">This Month</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <div className="flex gap-2 items-center">
+                            <Input
+                                type="date"
+                                onChange={(e) =>
+                                    router.get(
+                                        "/user/reports",
+                                        { ...filters, range_start: e.target.value },
+                                        { preserveState: true, replace: true }
+                                    )
+                                }
+                            />
+
+                            <span>to</span>
+
+                            <Input
+                                type="date"
+                                onChange={(e) =>
+                                    router.get(
+                                        "/user/reports",
+                                        { ...filters, range_end: e.target.value },
+                                        { preserveState: true, replace: true }
+                                    )
+                                }
+                            />
+                        </div>
+
                     </CardHeader>
                 </Card>
 
@@ -92,6 +150,34 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                     <CardContent className="flex gap-6">
                         <div>Total Consumption: <strong>{totals.total_value ?? 0} Kw</strong></div>
                         <div>Total Amount: <strong>{totals.total_amount ?? 0} MAD</strong></div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <h2 className="font-semibold text-lg">Visualization</h2>
+                    </CardHeader>
+                    <CardContent className="grid md:grid-cols-2 gap-6">
+
+                        {/* Bar Chart */}
+                        <div>
+                            <BarChart width={400} height={250} data={chartData}>
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey="consumption" />
+                            </BarChart>
+                        </div>
+
+                        {/* Line Chart */}
+                        <div>
+                            <LineChart width={400} height={250} data={chartData}>
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="amount" />
+                            </LineChart>
+                        </div>
                     </CardContent>
                 </Card>
 

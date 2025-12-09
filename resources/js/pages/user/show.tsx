@@ -2,9 +2,19 @@ import AppLayout from "@/layouts/app-layout";
 import { Head, Link } from "@inertiajs/react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-type Meter = { name: string };
-type Period = { name: string; start_time: string; end_time: string };
+type Meter = {
+    id: number;
+    name: string;
+};
+
+type Period = {
+    id: number;
+    name: string;
+    start_time: string;
+    end_time: string;
+};
 
 type ConsumptionRecord = {
     id: number;
@@ -17,6 +27,7 @@ type ConsumptionRecord = {
 };
 
 type User = {
+    id: number;
     name: string;
     email: string;
 };
@@ -26,75 +37,90 @@ type Props = {
     user: User;
 };
 
+type DetailProps = {
+    label: string;
+    value: string | number
+};
+
+function Detail({ label, value }: DetailProps) {
+    return (
+        <div className="p-3 border rounded-lg">
+            <h3 className="text-sm font-medium">{label}</h3>
+            <p className="text-base font-semibold mt-0.5">{value}</p>
+        </div>
+    );
+}
+
 export default function UserShow({ consumptionRecord, user }: Props) {
+    const formatDate = (date: string) =>
+        new Date(date).toLocaleString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+    const statusColor: Record<ConsumptionRecord["status"], string> = {
+        pending: "bg-yellow-500",
+        approved: "bg-green-600",
+        rejected: "bg-red-600",
+    };
+
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'All Records', href: '/user/consumptions' },
-                {
-                    title: 'Record #' + consumptionRecord.id,
-                    href: '',
-                },
+                { title: "All Records", href: "/user/consumptions" },
+                { title: "Record #" + consumptionRecord.id, href: "" },
             ]}
         >
             <Head title={`Record #${consumptionRecord.id}`} />
 
             <div className="p-4">
-                <Card>
+                <Card className="shadow-md">
                     <CardHeader>
-                        <h2 className="text-xl font-semibold">
+                        <h2 className="text-xl font-semibold flex items-center gap-2">
                             Consumption Record Details
+                            <Badge className={`${statusColor[consumptionRecord.status]}`}>
+                                {consumptionRecord.status.toUpperCase()}
+                            </Badge>
                         </h2>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+
+                    <CardContent className="space-y-6">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div>
-                                <h3 className="font-medium">Meter</h3>
-                                <p>{consumptionRecord.meter.name}</p>
-                            </div>
 
-                            <div>
-                                <h3 className="font-medium">Period</h3>
-                                <p>
-                                    {consumptionRecord.period.name} (
-                                    {consumptionRecord.period.start_time} -{' '}
-                                    {consumptionRecord.period.end_time})
-                                </p>
-                            </div>
+                            <Detail label="Meter" value={consumptionRecord.meter.name} />
 
-                            <div>
-                                <h3 className="font-medium">Value</h3>
-                                <p>{consumptionRecord.current_value} Kw</p>
-                            </div>
+                            <Detail
+                                label="Period"
+                                value={`${consumptionRecord.period.name} (${consumptionRecord.period.start_time} → ${consumptionRecord.period.end_time})`}
+                            />
 
-                            <div>
-                                <h3 className="font-medium">Amount</h3>
-                                <p>{consumptionRecord.total_amount} MAD</p>
-                            </div>
+                            <Detail
+                                label="Value"
+                                value={`${consumptionRecord.current_value} kW`}
+                            />
 
-                            <div>
-                                <h3 className="font-medium">Created By</h3>
-                                <p>
-                                    {user.name} (
-                                    {user.email})
-                                </p>
-                            </div>
+                            <Detail
+                                label="Total Amount"
+                                value={`${consumptionRecord.total_amount} MAD`}
+                            />
 
-                            <div>
-                                <h3 className="font-medium">Created At</h3>
-                                <p>
-                                    {new Date(
-                                        consumptionRecord.created_at,
-                                    ).toLocaleDateString()}
-                                </p>
-                            </div>
+                            <Detail
+                                label="Created By"
+                                value={`${user.name} (${user.email})`}
+                            />
+
+                            <Detail
+                                label="Created At"
+                                value={formatDate(consumptionRecord.created_at)}
+                            />
                         </div>
 
-                        <div className="mt-4 flex justify-end">
-                            <Button variant="default" asChild>
-                                <Link href="/user/consumptions">
-                                    Back to Records
-                                </Link>
+                        <div className="mt-6 flex justify-end">
+                            <Button asChild>
+                                <Link href="/user/consumptions">Back to Records</Link>
                             </Button>
                         </div>
                     </CardContent>
