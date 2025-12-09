@@ -121,11 +121,11 @@ class UserConsumptionController extends Controller
             $query->where('meter_id', $request->meter_id);
         }
 
-        $records = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-
-        $totals = $query->clone()
+        $totals = (clone $query)
             ->selectRaw('SUM(current_value) as total_value, SUM(total_amount) as total_amount')
             ->first();
+
+        $records = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('user/reports', [
             'records' => $records,
