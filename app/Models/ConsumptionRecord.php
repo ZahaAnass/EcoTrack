@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ConsumptionRecord extends Model
 {
-//    use HasFactory;
+    use HasFactory;
     protected $fillable = [
         'meter_id',
         'technician_id',
