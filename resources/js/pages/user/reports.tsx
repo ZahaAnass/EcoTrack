@@ -25,8 +25,8 @@ type Record = {
 };
 
 type Totals = {
-    total_value: number;
-    total_amount: number;
+    total_value: number | null;
+    total_amount: number | null;
 };
 
 type Filter = {
@@ -114,6 +114,9 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                         </Select>
 
                         <div className="flex gap-2 items-center">
+
+                            <span>from</span>
+
                             <Input
                                 type="date"
                                 onChange={(e) =>
@@ -148,8 +151,8 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                         <h2 className="font-semibold text-lg">Summary</h2>
                     </CardHeader>
                     <CardContent className="flex gap-6">
-                        <div>Total Consumption: <strong>{totals.total_value ?? 0} Kw</strong></div>
-                        <div>Total Amount: <strong>{totals.total_amount ?? 0} MAD</strong></div>
+                        <div>Total Consumption: <strong>{totals?.total_value ?? 0} Kw</strong></div>
+                        <div>Total Amount: <strong>{totals?.total_amount ?? 0} MAD</strong></div>
                     </CardContent>
                 </Card>
 
@@ -188,6 +191,7 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>#</TableHead>
                                         <TableHead>Meter</TableHead>
                                         <TableHead>Period</TableHead>
                                         <TableHead>Value</TableHead>
@@ -203,8 +207,9 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                                         </TableRow>
                                     )}
 
-                                    {records.data.map((rec) => (
+                                    {records.data.map((rec, index) => (
                                         <TableRow key={rec.id}>
+                                            <TableCell>{index + 1}</TableCell>
                                             <TableCell>{rec.meter.name}</TableCell>
                                             <TableCell>{rec.period.name}</TableCell>
                                             <TableCell>{rec.current_value} Kw</TableCell>
