@@ -1,16 +1,20 @@
 import AppLayout from "@/layouts/app-layout";
 import { Head, router } from "@inertiajs/react";
 
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import InertiaPagination from "@/components/inertia-pagination";
 
 import {
-    BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart
+    BarChart, Bar, XAxis, YAxis, Tooltip,
+    Area, AreaChart
 } from "recharts";
 
+import {
+    ChartConfig,
+} from "@/components/ui/chart";
 
 type Meter = { id: number; name: string };
 type Period = { id: number; name: string };
@@ -66,11 +70,19 @@ export default function Reports({ records, filters, periods, meters, totals }: P
         amount: r.total_amount,
     }));
 
+    const chartConfig: ChartConfig = {
+        amount: {
+            label: "Amount (MAD)",
+            color: "var(--chart-1)",
+        },
+    };
+
     return (
         <AppLayout breadcrumbs={[{ title: "Reports", href: "/user/reports" }]}>
             <Head title="Reports" />
 
             <div className="p-4 space-y-4">
+
                 {/* Filters */}
                 <Card>
                     <CardHeader className="flex gap-4 flex-row items-center justify-between">
@@ -83,7 +95,9 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Periods</SelectItem>
-                                {periods.map((p) => <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>)}
+                                {periods.map((p) => (
+                                    <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
 
@@ -94,7 +108,9 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                             <SelectTrigger className="w-40"><SelectValue placeholder="All Meters" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Meters</SelectItem>
-                                {meters.map((m) => <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>)}
+                                {meters.map((m) => (
+                                    <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
 
@@ -114,7 +130,6 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                         </Select>
 
                         <div className="flex gap-2 items-center">
-
                             <span>from</span>
 
                             <Input
@@ -141,7 +156,6 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                                 }
                             />
                         </div>
-
                     </CardHeader>
                 </Card>
 
@@ -156,10 +170,12 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                     </CardContent>
                 </Card>
 
+                {/* Charts */}
                 <Card>
                     <CardHeader>
                         <h2 className="font-semibold text-lg">Visualization</h2>
                     </CardHeader>
+
                     <CardContent className="grid md:grid-cols-2 gap-6">
 
                         {/* Bar Chart */}
@@ -172,15 +188,22 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                             </BarChart>
                         </div>
 
-                        {/* Line Chart */}
+                        {/* Area Chart */}
                         <div>
-                            <LineChart width={400} height={250} data={chartData}>
+                            <AreaChart width={400} height={250} data={chartData} margin={{ left: 20, right: 20 }}>
                                 <XAxis dataKey="name" />
                                 <YAxis />
                                 <Tooltip />
-                                <Line type="monotone" dataKey="amount" />
-                            </LineChart>
+                                <Area
+                                    type="monotone"
+                                    dataKey="amount"
+                                    stroke="#8884d8"
+                                    fill="#8884d8"
+                                    fillOpacity={0.3}
+                                />
+                            </AreaChart>
                         </div>
+
                     </CardContent>
                 </Card>
 
@@ -203,7 +226,9 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                                 <TableBody>
                                     {records.data.length === 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center py-6">No records found.</TableCell>
+                                            <TableCell colSpan={5} className="text-center py-6">
+                                                No records found.
+                                            </TableCell>
                                         </TableRow>
                                     )}
 
@@ -221,7 +246,6 @@ export default function Reports({ records, filters, periods, meters, totals }: P
                             </Table>
                         </div>
 
-                        {/* Pagination */}
                         <div className="mt-4">
                             <InertiaPagination data={records} />
                         </div>
