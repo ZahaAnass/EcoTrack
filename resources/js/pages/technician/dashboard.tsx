@@ -87,8 +87,8 @@ export default function Dashboard({ metersCount, myEntriesCount, recentEntries }
                                 Add Consumption
                             </CardTitle>
 
-                            <Button>
-                                <Link href="/consumptions/create">
+                            <Button asChild size="lg">
+                                <Link href="/technician/consumptions/create">
                                     + Add
                                 </Link>
                             </Button>
@@ -101,7 +101,7 @@ export default function Dashboard({ metersCount, myEntriesCount, recentEntries }
                         <h2 className="text-xl font-semibold">Recent Entries</h2>
 
                         <Button asChild>
-                            <Link href="/consumptions/mine">View All</Link>
+                            <Link href="/technician/consumptions/mine">View All</Link>
                         </Button>
                     </div>
 

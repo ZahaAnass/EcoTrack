@@ -76,7 +76,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
 
     const handleSearch = useRef(
         debounce((query: string) => {
-            router.get("/consumptions/mine",
+            router.get("/technician/consumptions/mine",
                 { ...filters, search: query },
                 { preserveState: true, replace: true }
             );
@@ -88,7 +88,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
     };
 
     const handleDelete = (id: number) => {
-        router.delete(`/consumptions/${id}`, {
+        router.delete(`/technician/consumptions/${id}`, {
             preserveState: true,
             onSuccess: () => {
                 toast.success("Entry deleted successfully.", { id: "entry-deleted" });
@@ -106,8 +106,6 @@ export default function MyEntries({ records, filters, periods }: Props) {
         }
     }, [flash.message]);
 
-    // @ts-ignore
-    // @ts-ignore
     return (
         <AppLayout breadcrumbs={[{ title: "My Entries", href: "/consumptions/mine" }]}>
             <Head title="My Entries" />
@@ -133,7 +131,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
                             defaultValue={filters.status ?? "all"}
                             onValueChange={(value) =>
                                 router.get(
-                                    "/consumptions/mine",
+                                    "/technician/consumptions/mine",
                                     {
                                         ...filters,
                                         status: value === "all" ? null : value,
@@ -159,7 +157,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
                             defaultValue={filters.period_id ?? "all"}
                             onValueChange={(value) =>
                                 router.get(
-                                    "/consumptions/mine",
+                                    "/technician/consumptions/mine",
                                     {
                                         ...filters,
                                         period_id: value === "all" ? null : value,
@@ -185,7 +183,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
 
 
                         <Button asChild>
-                            <Link href="/consumptions/create">+ Add New</Link>
+                            <Link href="/technician/consumptions/create">+ Add New</Link>
                         </Button>
                     </CardHeader>
 
@@ -209,7 +207,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
                                     {records.data.length === 0 && (
                                         <TableRow>
                                             <TableCell
-                                                colSpan={5}
+                                                colSpan={7}
                                                 className="text-center py-6 text-neutral-500"
                                             >
                                                 No entries yet.
@@ -274,7 +272,7 @@ export default function MyEntries({ records, filters, periods }: Props) {
                                             {rec.status === "pending" ? (
                                                 <TableCell className={"space-x-1.5"}>
                                                     <Button size={"sm"}>
-                                                        <Link href={`/consumptions/${rec.id}/edit`}>Edit</Link>
+                                                        <Link href={`/technician/consumptions/${rec.id}/edit`}>Edit</Link>
                                                     </Button>
                                                     <DeleteDialog onConfirm={() => handleDelete(rec.id)}>
                                                         <Button

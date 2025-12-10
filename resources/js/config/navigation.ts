@@ -24,9 +24,9 @@ export const navigation: Record<string, NavItem[]> = {
     ],
 
     technician: [
-        { title: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-        { title: "Add Consumption", href: "/consumptions/create", icon: PlusCircle },
-        { title: "My Entries", href: "/consumptions/mine", icon: ListChecks },
+        { title: "Dashboard", href: "/technician/dashboard", icon: LayoutGrid },
+        { title: "Add Consumption", href: "/technician/consumptions/create", icon: PlusCircle },
+        { title: "My Entries", href: "/technician/consumptions/mine", icon: ListChecks },
     ],
 
     user: [

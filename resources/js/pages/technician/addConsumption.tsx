@@ -37,7 +37,7 @@ export default function AddConsumption({ meters, periods }: AddConsumptionProps 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement> ) => {
         e.preventDefault();
-        post('/consumptions', {
+        post('/technician/consumptions', {
             onSuccess: () => {
                 toast.success('Consumption recorded successfully');
                 reset();
@@ -56,7 +56,7 @@ export default function AddConsumption({ meters, periods }: AddConsumptionProps 
                 <Card className="border border-sidebar-border/70 dark:border-sidebar-border w-full mx-auto">
                     <CardHeader className="flex flex-row justify-between items-center">
                         <CardTitle>Add New Consumption</CardTitle>
-                        <Button><Link href="/dashboard">Back</Link></Button>
+                        <Button><Link href="/technician/dashboard">Back</Link></Button>
                     </CardHeader>
 
                     <CardContent>

@@ -109,7 +109,7 @@ class TechnicianConsumptionController extends Controller
         ]);
 
         return redirect()
-            ->route('consumptions.mine')
+            ->route('technician.consumptions.mine')
             ->with('message', 'Consumption updated successfully.');
     }
 
@@ -184,7 +184,7 @@ class TechnicianConsumptionController extends Controller
         ]);
 
         return redirect()
-            ->route('consumptions.mine')
+            ->route('technician.consumptions.mine')
             ->with('message', 'Consumption recorded successfully.');
     }
 

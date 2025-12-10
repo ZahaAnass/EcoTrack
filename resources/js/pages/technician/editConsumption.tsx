@@ -44,7 +44,7 @@ export default function EditConsumption({ meters, periods, entry }: EditProps) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        put(`/consumptions/${entry.id}`, {
+        put(`/technician/consumptions/${entry.id}`, {
             onSuccess: () => {
                 toast.success('Consumption updated successfully');
             },
@@ -132,7 +132,7 @@ export default function EditConsumption({ meters, periods, entry }: EditProps) {
                                 </Button>
 
                                 <Button variant="secondary" asChild>
-                                    <Link href="/consumptions/mine">Cancel</Link>
+                                    <Link href="/technician/consumptions/mine">Cancel</Link>
                                 </Button>
                             </div>
                         </form>
