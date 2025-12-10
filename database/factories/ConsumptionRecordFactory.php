@@ -20,20 +20,21 @@ class ConsumptionRecordFactory extends Factory
         $consumption = $current - $previous;
 
         return [
-            'meter_id' => $meter->id,
-            'period_id' => $period->id,
-            'user_id' => $user->id,
+            'meter_id' => Meter::inRandomOrder()->first()->id,
+            'period_id' => Period::inRandomOrder()->first()->id,
+            'user_id' => User::inRandomOrder()->first()->id,
 
-            'reading_date' => fake()->dateTimeBetween('-40 days', 'now'),
+            'reading_date' => fn () => fake()->dateTimeBetween('-65 days', 'now'),
 
-            'previous_value' => $previous,
-            'current_value' => $current,
-            'calculated_value' => $consumption,
+            'previous_value' => $previous = fake()->numberBetween(100, 900),
+            'current_value' => $current = fake()->numberBetween($previous, $previous + 200),
+            'calculated_value' => $current - $previous,
 
-            'unit_price' => $period->unit_price,
-            'total_amount' => $consumption * $period->unit_price,
+            'unit_price' => fake()->randomFloat(2, 0.5, 3),
+            'total_amount' => fn () => ($current - $previous) * fake()->randomFloat(2, 0.5, 3),
 
             'status' => fake()->randomElement(['approved', 'pending', 'rejected']),
         ];
+
     }
 }

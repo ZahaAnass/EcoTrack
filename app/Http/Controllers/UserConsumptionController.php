@@ -88,24 +88,24 @@ class UserConsumptionController extends Controller
 
         // DATE FILTERS
         if ($request->date === 'day') {
-            $query->whereDate('created_at', today());
+            $query->whereDate('reading_date', today());
         }
 
         if ($request->date === 'week') {
-            $query->whereBetween('created_at', [
+            $query->whereBetween('reading_date', [
                 now()->startOfWeek(),
                 now()->endOfWeek(),
             ]);
         }
 
         if ($request->date === 'month') {
-            $query->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year);
+            $query->whereMonth('reading_date', now()->month)
+                ->whereYear('reading_date', now()->year);
         }
 
         // CUSTOM RANGE
         if ($request->filled('range_start') && $request->filled('range_end')) {
-            $query->whereBetween('created_at', [
+            $query->whereBetween('reading_date', [
                 $request->range_start . " 00:00:00",
                 $request->range_end . " 23:59:59"
             ]);
@@ -125,7 +125,7 @@ class UserConsumptionController extends Controller
             ->selectRaw('SUM(current_value) as total_value, SUM(total_amount) as total_amount')
             ->first();
 
-        $records = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $records = $query->orderBy('reading_date', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('user/reports', [
             'records' => $records,

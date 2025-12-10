@@ -19,7 +19,7 @@ type Entry = {
     id: number;
     current_value: number;
     total_amount: number;
-    created_at: string;
+    reading_date: string;
     meter: { name: string };
     period: { name: string };
 };
@@ -143,9 +143,7 @@ export default function UserDashboard({
                                         </TableCell>
 
                                         <TableCell>
-                                            {new Date(
-                                                entry.created_at,
-                                            ).toLocaleDateString()}
+                                            {new Date(entry.reading_date).toLocaleDateString()}
                                         </TableCell>
                                     </TableRow>
                                 ))}

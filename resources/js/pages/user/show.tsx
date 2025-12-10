@@ -21,7 +21,7 @@ type ConsumptionRecord = {
     current_value: number;
     total_amount: number;
     status: "pending" | "approved" | "rejected";
-    created_at: string;
+    reading_date: string;
     meter: Meter;
     period: Period;
 };
@@ -114,7 +114,7 @@ export default function UserShow({ consumptionRecord, user }: Props) {
 
                             <Detail
                                 label="Created At"
-                                value={formatDate(consumptionRecord.created_at)}
+                                value={formatDate(consumptionRecord.reading_date)}
                             />
                         </div>
 

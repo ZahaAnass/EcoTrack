@@ -43,7 +43,7 @@ type Entry = {
     id: number;
     current_value: number;
     total_amount: number;
-    created_at: string;
+    reading_date: string;
     meter: Meter;
     period: Period;
 };
@@ -152,7 +152,7 @@ export default function UserIndex({ consumptionRecords, filters, periods }: Prop
                                             <TableCell>{record.total_amount} MAD</TableCell>
 
                                             <TableCell>
-                                                {new Date(record.created_at).toLocaleDateString()}
+                                                {new Date(record.reading_date).toLocaleDateString()}
                                             </TableCell>
 
                                             <TableCell>
