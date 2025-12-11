@@ -41,3 +41,22 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export type Meter = { id: number; name: string; location?: string; unit_price?: number };
+export type Period = { id: number; name: string; start_time?: string; end_time?: string; unit_price?: number };
+export type ConsumptionRecord = {
+    id: number;
+    meter: Meter;
+    period: Period;
+    user?: { id: number; name?: string; email?: string } | null;
+    reading_date?: string;
+    created_at?: string;
+    updated_at?: string;
+    current_value: number;
+    previous_value?: number;
+    calculated_value?: number;
+    unit_price?: number;
+    total_amount?: number;
+    status: "pending" | "approved" | "rejected";
+};
+
