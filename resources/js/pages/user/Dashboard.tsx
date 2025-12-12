@@ -3,6 +3,7 @@ import { Head, Link } from "@inertiajs/react";
 import UserStats from "@/components/user/UserStats";
 import UserEntriesTable from "@/components/user/UserEntriesTable";
 import type { ConsumptionRecord } from "@/types";
+import { Button } from '@/components/ui/button';
 
 export default function UserDashboard({ totalMeters, totalRecords, pending, approved, recentEntries }: { totalMeters:number; totalRecords:number; pending:number; approved:number; recentEntries: ConsumptionRecord[] }) {
     return (
@@ -13,7 +14,9 @@ export default function UserDashboard({ totalMeters, totalRecords, pending, appr
                 <div className="rounded-xl border p-4">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-semibold">Recent Records</h2>
-                        <Link href="/user/consumptions" className="btn">View All</Link>
+                        <Button>
+                            <Link href="/user/consumptions" className="btn">View All</Link>
+                        </Button>
                     </div>
                     <UserEntriesTable records={recentEntries} />
                 </div>

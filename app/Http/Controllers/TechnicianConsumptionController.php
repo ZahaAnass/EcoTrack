@@ -13,7 +13,7 @@ class TechnicianConsumptionController extends Controller
     // Dashboard for technician
     public function dashboard()
     {
-        return Inertia::render('technician/Dashboard', [
+        return Inertia::render('technician/dashboard', [
             'metersCount' => Meter::count(),
             'myEntriesCount' => ConsumptionRecord::where('user_id', auth()->id())->count(),
             'recentEntries' => ConsumptionRecord::where('user_id', auth()->id())
@@ -39,7 +39,7 @@ class TechnicianConsumptionController extends Controller
 
     public function edit(ConsumptionRecord $record)
     {
-        return Inertia::render('technician/EditConsumption', [
+        return Inertia::render('technician/editConsumption', [
             'entry'   => $record,
             'meters'  => Meter::all(),
             'periods' => Period::all(),
@@ -119,7 +119,7 @@ class TechnicianConsumptionController extends Controller
         $meters = Meter::all();
         $periods = Period::all();
 
-        return Inertia::render('technician/CreateConsumption', [
+        return Inertia::render('technician/addConsumption', [
             'meters' => $meters,
             'periods' => $periods
         ]);
@@ -213,7 +213,7 @@ class TechnicianConsumptionController extends Controller
 
         $records = $query->paginate(10)->onEachSide(1);
 
-        return Inertia::render('technician/MyEntries', [
+        return Inertia::render('technician/myEntries', [
             'records' => $records,
             'filters' => $request->only(['search', 'status', 'period_id']),
             'periods' => Period::all(),

@@ -1,3 +1,4 @@
+
 # Cahier de charge - Système de calcul de consommation d’électricité
 
 ## 1. Informations générales

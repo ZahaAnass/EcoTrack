@@ -25,7 +25,7 @@ class UserConsumptionController extends Controller
             ->take(10)
             ->get();
 
-        return Inertia::render('user/Dashboard', [
+        return Inertia::render('user/dashboard', [
             'totalMeters'     => $totalMeters,
             'totalRecords'    => $totalRecords,
             'pending'         => $pending,
@@ -61,7 +61,7 @@ class UserConsumptionController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('user/History', [
+        return Inertia::render('user/index', [
             'consumptionRecords' => $records,
             'filters' => $filters,
             'periods' => Period::all(),
@@ -73,7 +73,7 @@ class UserConsumptionController extends Controller
 
         $user = $record->user;
 
-        return Inertia::render('user/ShowRecord', [
+        return Inertia::render('user/show', [
             'consumptionRecord' => $record,
             'user' => $user,
         ]);
@@ -127,7 +127,7 @@ class UserConsumptionController extends Controller
 
         $records = $query->orderBy('reading_date', 'desc')->paginate(10)->withQueryString();
 
-        return Inertia::render('user/Reports', [
+        return Inertia::render('user/reports', [
             'records' => $records,
             'filters' => $filters,
             'periods' => Period::all(),
