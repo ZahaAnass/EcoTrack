@@ -132,6 +132,7 @@ class UserConsumptionController extends Controller
             'filters' => $filters,
             'periods' => Period::all(),
             'meters' => Meter::all(),
+            'totals' => $totals,
         ]);
     }
 
