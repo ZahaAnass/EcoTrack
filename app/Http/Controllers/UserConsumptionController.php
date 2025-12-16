@@ -135,5 +135,4 @@ class UserConsumptionController extends Controller
             'totals' => $totals,
         ]);
     }
-
 }
