@@ -14,13 +14,13 @@ import {
 
 export const navigation: Record<string, NavItem[]> = {
     admin: [
-        { title: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-        { title: "Meters", href: "/meters", icon: Gauge },
-        { title: "Periods", href: "/periods", icon: Clock },
-        { title: "Consumptions", href: "/consumptions", icon: Bolt },
-        { title: "Technicians", href: "/technicians", icon: Users },
-        { title: "Users", href: "/users", icon: UserCog },
-        { title: "Reports", href: "/reports", icon: BarChart3 },
+        { title: "Dashboard", href: "/admin/dashboard", icon: LayoutGrid },
+        { title: "Meters", href: "/admin/meters", icon: Gauge },
+        { title: "Periods", href: "/admin/periods", icon: Clock },
+        { title: "Consumptions", href: "/admin/consumptions", icon: Bolt },
+        { title: "Technicians", href: "/admin/technicians", icon: Users },
+        { title: "Users", href: "/admin/users", icon: UserCog },
+        { title: "Reports", href: "/admin/reports", icon: BarChart3 },
     ],
 
     technician: [
