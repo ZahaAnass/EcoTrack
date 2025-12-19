@@ -158,6 +158,7 @@ export default function Reports({ records, filters, periods, meters, totals }: P
 
                         <div className="flex justify-end">
                             <Button
+                                type={"reset"}
                                 variant="destructive"
                                 onClick={() =>
                                     router.get("/user/reports", {}, { preserveState: true, replace: true })
