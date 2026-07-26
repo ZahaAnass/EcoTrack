@@ -6,6 +6,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { useT } from '@/lib/i18n';
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import { Link } from '@inertiajs/react';
 import { Fragment } from 'react';
@@ -15,6 +16,8 @@ export function Breadcrumbs({
 }: {
     breadcrumbs: BreadcrumbItemType[];
 }) {
+    const t = useT();
+
     return (
         <>
             {breadcrumbs.length > 0 && (
@@ -27,12 +30,12 @@ export function Breadcrumbs({
                                     <BreadcrumbItem>
                                         {isLast ? (
                                             <BreadcrumbPage>
-                                                {item.title}
+                                                {t(item.title)}
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
                                                 <Link href={item.href}>
-                                                    {item.title}
+                                                    {t(item.title)}
                                                 </Link>
                                             </BreadcrumbLink>
                                         )}

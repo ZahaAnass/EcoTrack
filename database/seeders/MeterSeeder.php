@@ -2,51 +2,42 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Meter;
+use Illuminate\Database\Seeder;
 
 class MeterSeeder extends Seeder
 {
     public function run(): void
     {
-        $meters = [
-            "Chambre froid",
-            "RDC",
-            "Mezzanine",
-            "Clim teras",
-            "Cuisine RDC",
-            "Clim mezzanine",
-            "Chouferiez",
-            "Compter Général",
-            "General 1",
-            "General 2",
-            "General 3",
+        $electricity = [
+            ['name' => 'Compteur Général', 'location' => 'Main board'],
+            ['name' => 'Chambre froide', 'location' => 'Cold room'],
+            ['name' => 'Cuisine RDC', 'location' => 'Kitchen — ground floor'],
+            ['name' => 'RDC', 'location' => 'Ground floor'],
+            ['name' => 'Mezzanine', 'location' => 'Mezzanine'],
+            ['name' => 'Clim terrasse', 'location' => 'Terrace AC'],
+            ['name' => 'Clim mezzanine', 'location' => 'Mezzanine AC'],
+            ['name' => 'Chaufferie', 'location' => 'Boiler room'],
         ];
 
-        /** @var array<int,string> $locations */
-        $locations = [
-            "kitchen",
-            "living room",
-            "bedroom",
-            "bathroom",
-            "garage",
-            "garden",
-            "basement",
-            "attic",
-            "dining room",
-            "office",
-            "hallway",
+        $water = [
+            ['name' => 'Eau générale', 'location' => 'Main supply'],
+            ['name' => 'Eau cuisine', 'location' => 'Kitchen'],
+            ['name' => 'Eau sanitaires', 'location' => 'Restrooms'],
         ];
 
-        $locationCount = count($locations);
+        foreach ($electricity as $i => $meter) {
+            Meter::firstOrCreate(
+                ['serial_number' => sprintf('ELC-%04d', $i + 1)],
+                $meter + ['type' => Meter::TYPE_ELECTRICITY, 'status' => 'active'],
+            );
+        }
 
-        foreach ($meters as $index => $meter) {
-            $assignedLocation = $locations[$index % $locationCount];
-
-            Meter::create([
-                'name' => $meter,
-                'location' => $assignedLocation,
-            ]);
+        foreach ($water as $i => $meter) {
+            Meter::firstOrCreate(
+                ['serial_number' => sprintf('WTR-%04d', $i + 1)],
+                $meter + ['type' => Meter::TYPE_WATER, 'status' => 'active'],
+            );
         }
     }
 }

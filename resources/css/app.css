@@ -12,6 +12,9 @@
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+    --font-display:
+        'Space Grotesk', 'Instrument Sans', ui-sans-serif, system-ui,
+        sans-serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -45,6 +48,12 @@
     --color-input: var(--input);
     --color-ring: var(--ring);
 
+    /* Utility identities — electricity is always amber, water is always blue.
+       Both validated for light AND dark surfaces (CVD-safe pair). */
+    --color-electricity: var(--electricity);
+    --color-water: var(--water);
+    --color-gasoil: var(--gasoil);
+
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
@@ -62,74 +71,87 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    --background: oklch(0.982 0.005 145);
+    --foreground: oklch(0.2 0.018 155);
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --card-foreground: oklch(0.2 0.018 155);
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.2 0.018 155);
+    --primary: oklch(0.44 0.1 155);
+    --primary-foreground: oklch(0.98 0.008 150);
+    --secondary: oklch(0.955 0.012 150);
+    --secondary-foreground: oklch(0.3 0.03 155);
+    --muted: oklch(0.955 0.01 150);
+    --muted-foreground: oklch(0.5 0.022 155);
+    --accent: oklch(0.94 0.03 152);
+    --accent-foreground: oklch(0.32 0.06 155);
     --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    --destructive-foreground: oklch(0.98 0.008 150);
+    --border: oklch(0.913 0.012 150);
+    --input: oklch(0.913 0.012 150);
+    --ring: oklch(0.6 0.08 155);
+
+    --electricity: #d97706;
+    --water: #0284c7;
+    --gasoil: #9333ea;
+
+    --chart-1: var(--electricity);
+    --chart-2: var(--water);
+    --chart-3: oklch(0.55 0.11 155);
+    --chart-4: oklch(0.65 0.12 300);
+    --chart-5: oklch(0.6 0.13 20);
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+
+    /* The greenhouse frame — a deep forest sidebar in both modes. */
+    --sidebar: oklch(0.245 0.038 155);
+    --sidebar-foreground: oklch(0.93 0.012 150);
+    --sidebar-primary: oklch(0.75 0.13 150);
+    --sidebar-primary-foreground: oklch(0.17 0.03 155);
+    --sidebar-accent: oklch(0.31 0.045 155);
+    --sidebar-accent-foreground: oklch(0.97 0.01 150);
+    --sidebar-border: oklch(0.31 0.04 155);
+    --sidebar-ring: oklch(0.65 0.1 152);
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --background: oklch(0.185 0.022 158);
+    --foreground: oklch(0.955 0.01 150);
+    --card: oklch(0.235 0.026 158);
+    --card-foreground: oklch(0.955 0.01 150);
+    --popover: oklch(0.235 0.026 158);
+    --popover-foreground: oklch(0.955 0.01 150);
+    --primary: oklch(0.78 0.15 150);
+    --primary-foreground: oklch(0.17 0.03 155);
+    --secondary: oklch(0.29 0.03 156);
+    --secondary-foreground: oklch(0.955 0.01 150);
+    --muted: oklch(0.29 0.028 156);
+    --muted-foreground: oklch(0.72 0.025 152);
+    --accent: oklch(0.33 0.05 155);
+    --accent-foreground: oklch(0.965 0.012 150);
+    --destructive: oklch(0.62 0.23 27);
+    --destructive-foreground: oklch(0.98 0.008 150);
+    --border: oklch(0.33 0.03 156);
+    --input: oklch(0.33 0.03 156);
+    --ring: oklch(0.6 0.11 152);
+
+    --electricity: #d97706;
+    --water: #0284c7;
+    --gasoil: #a855f7;
+
+    --chart-1: var(--electricity);
+    --chart-2: var(--water);
+    --chart-3: oklch(0.7 0.12 155);
+    --chart-4: oklch(0.62 0.12 300);
+    --chart-5: oklch(0.6 0.13 20);
+
+    --sidebar: oklch(0.155 0.026 158);
+    --sidebar-foreground: oklch(0.93 0.012 150);
+    --sidebar-primary: oklch(0.78 0.15 150);
+    --sidebar-primary-foreground: oklch(0.17 0.03 155);
+    --sidebar-accent: oklch(0.24 0.04 156);
+    --sidebar-accent-foreground: oklch(0.97 0.01 150);
+    --sidebar-border: oklch(0.24 0.035 156);
+    --sidebar-ring: oklch(0.6 0.11 152);
 }
 
 @layer base {
@@ -140,4 +162,130 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    /* Meter readings and money read like a register: display face, lined-up digits. */
+    .figure {
+        font-family: var(--font-display);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.01em;
+    }
+
+    h1, h2, h3 {
+        font-family: var(--font-display);
+        letter-spacing: -0.02em;
+    }
+}
+
+/* ── Landing page motion ─────────────────────────────────────────────── */
+
+@keyframes eco-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-18px) scale(1.04); }
+}
+
+@keyframes eco-draw {
+    from { stroke-dashoffset: 600; }
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes eco-pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.35); }
+}
+
+@keyframes eco-rise {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+}
+
+.eco-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(70px);
+    pointer-events: none;
+    animation: eco-float 9s ease-in-out infinite;
+}
+
+.eco-grid-bg {
+    background-image:
+        linear-gradient(to right, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 35%, black 30%, transparent 75%);
+}
+
+.eco-draw-line {
+    stroke-dasharray: 600;
+    animation: eco-draw 2.4s ease-out forwards;
+}
+
+.eco-pulse {
+    animation: eco-pulse-dot 2s ease-in-out infinite;
+}
+
+.eco-bar {
+    transform-origin: bottom;
+    animation: eco-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Scroll reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+        opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .eco-blob, .eco-draw-line, .eco-pulse, .eco-bar {
+        animation: none;
+    }
+    .eco-draw-line {
+        stroke-dashoffset: 0;
+    }
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ── Scrollbars — slim, rounded, on-theme in both modes ─────────────── */
+
+* {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: color-mix(in oklab, var(--primary) 45%, var(--muted)) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--primary) 40%, var(--muted));
+    border-radius: 9999px;
+    border: 2.5px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--primary) 65%, var(--muted));
+    background-clip: content-box;
+    border: 2.5px solid transparent;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
 }

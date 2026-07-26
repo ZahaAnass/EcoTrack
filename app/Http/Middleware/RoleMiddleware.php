@@ -9,14 +9,16 @@ use Symfony\Component\HttpFoundation\Response;
 class RoleMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Restrict a route to one or more roles: ->middleware('role:admin,technician').
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!auth()->check() || auth()->user()->role !== $role) {
-            abort(403, 'Unauthorized action.');
+        $user = $request->user();
+
+        if (! $user || ! in_array($user->role, $roles, true)) {
+            abort(403, __('You do not have permission to access this page.'));
         }
 
         return $next($request);

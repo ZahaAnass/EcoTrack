@@ -2,39 +2,44 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\ConsumptionRecord;
 use App\Models\Meter;
 use App\Models\Period;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ConsumptionRecord>
+ */
 class ConsumptionRecordFactory extends Factory
 {
     public function definition(): array
     {
-        $meter = Meter::inRandomOrder()->first();
-        $period = Period::inRandomOrder()->first();
-        $user = User::inRandomOrder()->first();
-
-        $previous = fake()->numberBetween(100, 800);
-        $current = $previous + fake()->numberBetween(10, 150);
-        $consumption = $current - $previous;
+        $previous = fake()->randomFloat(2, 100, 900);
+        $current = $previous + fake()->randomFloat(2, 10, 150);
+        $unitPrice = fake()->randomFloat(2, 0.5, 3);
 
         return [
-            'meter_id' => Meter::inRandomOrder()->first()->id,
-            'period_id' => Period::inRandomOrder()->first()->id,
-            'user_id' => User::inRandomOrder()->first()->id,
-
-            'reading_date' => fn () => fake()->dateTimeBetween('-65 days', 'now'),
-
-            'previous_value' => $previous = fake()->numberBetween(100, 900),
-            'current_value' => $current = fake()->numberBetween($previous, $previous + 200),
-            'calculated_value' => $current - $previous,
-
-            'unit_price' => fake()->randomFloat(2, 0.5, 3),
-            'total_amount' => fn () => ($current - $previous) * fake()->randomFloat(2, 0.5, 3),
-
-            'status' => fake()->randomElement(['approved', 'pending', 'rejected']),
+            'meter_id' => Meter::factory(),
+            'period_id' => Period::factory(),
+            'user_id' => User::factory()->state(['role' => User::ROLE_TECHNICIAN]),
+            'reading_date' => fake()->dateTimeBetween('-65 days', 'now'),
+            'previous_value' => $previous,
+            'current_value' => $current,
+            'calculated_value' => round($current - $previous, 2),
+            'unit_price' => $unitPrice,
+            'total_amount' => round(($current - $previous) * $unitPrice, 2),
+            'status' => fake()->randomElement(ConsumptionRecord::STATUSES),
         ];
+    }
 
+    public function approved(): static
+    {
+        return $this->state(['status' => ConsumptionRecord::STATUS_APPROVED]);
+    }
+
+    public function pending(): static
+    {
+        return $this->state(['status' => ConsumptionRecord::STATUS_PENDING]);
     }
 }

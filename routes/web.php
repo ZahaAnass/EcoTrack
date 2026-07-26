@@ -1,15 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminConsumptionController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MeterController;
+use App\Http\Controllers\Admin\PeriodController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\TechnicianConsumptionController;
+use App\Http\Controllers\UserConsumptionController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\TechnicianConsumptionController;
-use App\Http\Controllers\UserConsumptionController;
-use App\Http\Controllers\Admin\MeterController;
-use App\Http\Controllers\Admin\AdminConsumptionController;
-use App\Http\Controllers\Admin\PeriodController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -17,134 +19,143 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+/*
+|--------------------------------------------------------------------------
+| Role dispatcher
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'verified'])->get('dashboard', function () {
+    return match (auth()->user()->role) {
+        User::ROLE_ADMIN => redirect()->route('admin.dashboard'),
+        User::ROLE_TECHNICIAN => redirect()->route('technician.dashboard'),
+        default => redirect()->route('user.dashboard'),
+    };
+})->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| Notifications (admin + technician bell)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-
-        $user = auth()->user();
-
-        if ($user->role == 'technician') {;
-            return redirect()->route('technician.dashboard');
-        }
-
-        if ($user->role == 'user') {
-            return redirect()->route('user.dashboard');
-        }
-
-        if ($user->role == 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return Inertia::render('dashboard');
-
-    })->name('dashboard');
+    Route::post('notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])
+        ->name('notifications.read-all');
+    Route::post('notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markRead'])
+        ->name('notifications.read');
 });
 
-
-// Technician Routes
+/*
+|--------------------------------------------------------------------------
+| Technician
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'verified', 'role:technician'])
-    ->prefix("technician")->name("technician.")->group(function () {
+    ->prefix('technician')
+    ->name('technician.')
+    ->group(function () {
+        Route::get('dashboard', [TechnicianConsumptionController::class, 'dashboard'])
+            ->name('dashboard');
 
-    // Technician dashboard
-    Route::get('/dashboard', [TechnicianConsumptionController::class, 'dashboard'])
-        ->name('dashboard');
+        Route::get('consumptions', [TechnicianConsumptionController::class, 'myEntries'])
+            ->name('consumptions.index');
 
-    Route::get('/consumptions', [TechnicianConsumptionController::class, 'dashboard'])
-        ->name('consumptions.dashboard');
+        Route::get('consumptions/create', [TechnicianConsumptionController::class, 'create'])
+            ->name('consumptions.create');
 
-    Route::get('/consumptions/mine', [TechnicianConsumptionController::class, 'myEntries'])
-        ->name('consumptions.mine');
+        Route::post('consumptions', [TechnicianConsumptionController::class, 'store'])
+            ->name('consumptions.store');
 
-    Route::get('/consumptions/create', [TechnicianConsumptionController::class, 'create'])
-        ->name('consumptions.create');
+        Route::get('consumptions/{record}/edit', [TechnicianConsumptionController::class, 'edit'])
+            ->name('consumptions.edit');
 
-    Route::post('/consumptions', [TechnicianConsumptionController::class, 'store'])
-        ->name('consumptions.store');
+        Route::put('consumptions/{record}', [TechnicianConsumptionController::class, 'update'])
+            ->name('consumptions.update');
 
-    Route::get('/consumptions/{record}/edit', [TechnicianConsumptionController::class, 'edit'])
-        ->name('consumptions.edit');
+        Route::delete('consumptions/{record}', [TechnicianConsumptionController::class, 'destroy'])
+            ->name('consumptions.destroy');
+    });
 
-    Route::put('/consumptions/{record}', [TechnicianConsumptionController::class, 'update'])
-        ->name('consumptions.update');
-
-    Route::delete('/consumptions/{record}', [TechnicianConsumptionController::class, 'destroy'])
-        ->name('consumptions.destroy');
-});
-
-// Admin Routes
+/*
+|--------------------------------------------------------------------------
+| Admin
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Admin Dashboard
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/dashboard', [DashboardController::class, 'index'])
+        Route::get('dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Meter Management
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('meters', MeterController::class);
+        Route::resource('meters', MeterController::class)->except(['show']);
+        Route::resource('periods', PeriodController::class)->except(['show']);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Period Management
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('periods', PeriodController::class);
+        Route::get('consumptions', [AdminConsumptionController::class, 'index'])
+            ->name('consumptions.index');
+        Route::get('consumptions/export', [AdminConsumptionController::class, 'export'])
+            ->name('consumptions.export');
+        Route::get('consumptions/{consumption}', [AdminConsumptionController::class, 'show'])
+            ->name('consumptions.show');
+        Route::post('consumptions/{consumption}/approve', [AdminConsumptionController::class, 'approve'])
+            ->name('consumptions.approve');
+        Route::post('consumptions/{consumption}/reject', [AdminConsumptionController::class, 'reject'])
+            ->name('consumptions.reject');
+        Route::delete('consumptions/{consumption}', [AdminConsumptionController::class, 'destroy'])
+            ->name('consumptions.destroy');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Consumption Records (Admin Approval)
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('consumptions', AdminConsumptionController::class);
+        Route::resource('users', UserController::class)->except(['show']);
 
-        // Approve / Reject
-        Route::post(
-            'consumptions/{consumption}/approve',
-            [AdminConsumptionController::class, 'approve']
-        )->name('consumptions.approve');
+        Route::get('reports', [ReportController::class, 'index'])
+            ->name('reports.index');
+        Route::get('reports/export', [ReportController::class, 'export'])
+            ->name('reports.export');
 
-        Route::post(
-            'consumptions/{consumption}/reject',
-            [AdminConsumptionController::class, 'reject']
-        )->name('consumptions.reject');
+        // Quick what-if calculator — nothing it computes is ever saved.
+        Route::get('simulator', function () {
+            return Inertia::render('admin/simulator', [
+                'periods' => \App\Models\Period::orderBy('start_time')->get(),
+            ]);
+        })->name('simulator');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Technician List
-        |--------------------------------------------------------------------------
-        */
-        Route::get(
-            'technicians',
-            [UserController::class, 'technicians']
-        )->name('technicians.index');
+        // Gasoil stock tracking (admin only).
+        Route::get('gasoil', [\App\Http\Controllers\Admin\GasoilController::class, 'index'])
+            ->name('gasoil.index');
+        Route::get('gasoil/export', [\App\Http\Controllers\Admin\GasoilController::class, 'export'])
+            ->name('gasoil.export');
+        Route::post('gasoil/import', [\App\Http\Controllers\Admin\GasoilController::class, 'storeImport'])
+            ->name('gasoil.import');
+        Route::post('gasoil/consumption', [\App\Http\Controllers\Admin\GasoilController::class, 'storeConsumption'])
+            ->name('gasoil.consumption');
+        Route::post('gasoil/settings', [\App\Http\Controllers\Admin\GasoilController::class, 'saveSettings'])
+            ->name('gasoil.settings');
+        Route::post('gasoil/{transaction}/approve', [\App\Http\Controllers\Admin\GasoilController::class, 'approve'])
+            ->name('gasoil.approve');
+        Route::post('gasoil/{transaction}/reject', [\App\Http\Controllers\Admin\GasoilController::class, 'reject'])
+            ->name('gasoil.reject');
+        Route::delete('gasoil/{transaction}', [\App\Http\Controllers\Admin\GasoilController::class, 'destroy'])
+            ->name('gasoil.destroy');
     });
 
-// Normal User Routes
-Route::middleware(['auth', 'verified', 'role:user'])->prefix("user")->name("user.")->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Viewer (regular user)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'verified', 'role:user'])
+    ->prefix('user')
+    ->name('user.')
+    ->group(function () {
+        Route::get('dashboard', [UserConsumptionController::class, 'dashboard'])
+            ->name('dashboard');
 
-    Route::get('/dashboard', [UserConsumptionController::class, 'dashboard'])
-        ->name('dashboard');
+        Route::get('consumptions', [UserConsumptionController::class, 'index'])
+            ->name('consumptions.index');
 
-    // Read-only list of consumptions
-    Route::get('/consumptions', [UserConsumptionController::class, 'index'])
-        ->name('user.consumptions.index');
+        Route::get('consumptions/{record}', [UserConsumptionController::class, 'show'])
+            ->name('consumptions.show');
 
-    // View single consumption entry
-    Route::get('/consumptions/{record}', [UserConsumptionController::class, 'show'])
-        ->name('user.consumptions.show');
-
-    // Reports
-    Route::get('/reports', [UserConsumptionController::class, 'reports'])
-        ->name('user.reports.index');
-});
-
+        Route::get('reports', [UserConsumptionController::class, 'reports'])
+            ->name('reports.index');
+    });
 
 require __DIR__.'/settings.php';

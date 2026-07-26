@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Meter;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,24 +17,27 @@ class MeterFactory extends Factory
      */
     public function definition(): array
     {
+        $type = fake()->randomElement(Meter::TYPES);
+
         return [
-            'name' => fake()->randomElement([
-                "Chambre froid",
-                "RDC",
-                "Mezzanine",
-                "Clim teras",
-                "Cuisine RDC",
-                "Clim mezzanine",
-                "Choufrie",
-                "C.G",
-                "General 1",
-                "General 2",
-                "General 3",
-            ]),
+            'name' => fake()->words(2, true),
+            'serial_number' => strtoupper(fake()->unique()->bothify('MTR-####??')),
+            'type' => $type,
             'location' => fake()->randomElement([
-                "kitchen", "living room", "garage", "basement",
-                "office", "attic", "dining room", "yard"
+                'kitchen', 'living room', 'garage', 'basement',
+                'office', 'attic', 'dining room', 'yard',
             ]),
+            'status' => 'active',
         ];
+    }
+
+    public function electricity(): static
+    {
+        return $this->state(['type' => Meter::TYPE_ELECTRICITY]);
+    }
+
+    public function water(): static
+    {
+        return $this->state(['type' => Meter::TYPE_WATER]);
     }
 }

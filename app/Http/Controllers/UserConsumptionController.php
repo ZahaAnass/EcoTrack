@@ -2,138 +2,105 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Models\ConsumptionRecord;
 use App\Models\Meter;
 use App\Models\Period;
-use App\Models\ConsumptionRecord;
+use App\Support\ConsumptionReport;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserConsumptionController extends Controller
 {
-    public function dashboard()
+    public function dashboard(): Response
     {
-        $totalMeters = Meter::count();
-
-        $totalRecords = ConsumptionRecord::count();
-
-        $pending = ConsumptionRecord::where('status', 'pending')->count();
-        $approved = ConsumptionRecord::where('status', 'approved')->count();
-
-        $recentEntries = ConsumptionRecord::with(['meter', 'period'])
-            ->where("status", "approved")
-            ->orderBy('created_at', 'desc')
-            ->take(10)
+        $thisMonth = ConsumptionRecord::approved()
+            ->whereBetween('reading_date', [now()->startOfMonth(), now()->endOfMonth()])
+            ->with('meter:id,type')
             ->get();
 
+        $trendRecords = ConsumptionRecord::approved()
+            ->where('reading_date', '>=', now()->subDays(29)->startOfDay())
+            ->with('meter:id,type')
+            ->get();
+
+        $daily = collect(range(29, 0))
+            ->map(fn (int $daysAgo) => now()->subDays($daysAgo)->format('Y-m-d'))
+            ->map(function (string $date) use ($trendRecords) {
+                $records = $trendRecords->filter(fn ($r) => $r->reading_date->format('Y-m-d') === $date);
+
+                return [
+                    'date' => $date,
+                    'electricity' => round($records->filter(fn ($r) => $r->meter->type === Meter::TYPE_ELECTRICITY)->sum('calculated_value'), 2),
+                    'water' => round($records->filter(fn ($r) => $r->meter->type === Meter::TYPE_WATER)->sum('calculated_value'), 2),
+                ];
+            })
+            ->values();
+
         return Inertia::render('user/dashboard', [
-            'totalMeters'     => $totalMeters,
-            'totalRecords'    => $totalRecords,
-            'pending'         => $pending,
-            'approved'        => $approved,
-            'recentEntries'   => $recentEntries,
+            'stats' => [
+                'meters' => Meter::active()->count(),
+                'monthElectricity' => round($thisMonth->filter(fn ($r) => $r->meter->type === Meter::TYPE_ELECTRICITY)->sum('calculated_value'), 2),
+                'monthWater' => round($thisMonth->filter(fn ($r) => $r->meter->type === Meter::TYPE_WATER)->sum('calculated_value'), 2),
+                'monthAmount' => round($thisMonth->sum('total_amount'), 2),
+            ],
+            'daily' => $daily,
+            'recentEntries' => ConsumptionRecord::approved()
+                ->with(['meter', 'period'])
+                ->orderByDesc('reading_date')
+                ->take(8)
+                ->get(),
         ]);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
-        $filters = $request->only(['search', 'period_id']);
+        // Electricity and water each get their own page.
+        $type = in_array($request->input('type'), Meter::TYPES, true)
+            ? $request->input('type')
+            : Meter::TYPE_ELECTRICITY;
 
-        $records = ConsumptionRecord::with(['meter', 'period'])
-            ->where('status', 'approved')
-            // SEARCH (meter name OR period name OR value)
-            ->when($request->search, function ($query, $search) {
-                $query->whereHas('meter', fn($q) =>
+        $query = \App\Support\RecordSort::apply(
+            ConsumptionRecord::approved()
+                ->with(['meter', 'period'])
+                ->whereHas('meter', fn ($m) => $m->where('type', $type)),
+            $request,
+        );
+
+        if ($search = $request->input('search')) {
+            $query->whereHas('meter', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                )
-                    ->orWhereHas('period', fn($q) =>
-                    $q->where('name', 'like', "%{$search}%")
-                    )
-                    ->orWhere('current_value', 'like', "%{$search}%")
-                    ->orWhere('total_amount', 'like', "%{$search}%");
-            })
+                    ->orWhere('serial_number', 'like', "%{$search}%");
+            });
+        }
 
-            // PERIOD FILTER
-            ->when($request->period_id && $request->period_id !== 'all', function ($query) use ($request) {
-                $query->where('period_id', $request->period_id);
-            })
+        if ($request->filled('period_id') && $request->input('period_id') !== 'all') {
+            $query->where('period_id', $request->input('period_id'));
+        }
 
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
-
-        return Inertia::render('user/index', [
-            'consumptionRecords' => $records,
-            'filters' => $filters,
-            'periods' => Period::all(),
+        return Inertia::render('user/history', [
+            'records' => $query->paginate(10)->withQueryString(),
+            'filters' => array_merge(
+                $request->only(['search', 'period_id', 'sort', 'dir']),
+                ['type' => $type],
+            ),
+            'periods' => Period::forType($type)->orderBy('start_time')->get(['id', 'name']),
         ]);
     }
 
-    public function show(ConsumptionRecord $record) {
-        $record->load(['meter', 'period', 'user']);
-
-        $user = $record->user;
+    public function show(ConsumptionRecord $record): Response
+    {
+        // Viewers only ever see validated data.
+        abort_unless($record->status === ConsumptionRecord::STATUS_APPROVED, 404);
 
         return Inertia::render('user/show', [
-            'consumptionRecord' => $record,
-            'user' => $user,
+            'record' => $record->load(['meter', 'period', 'user']),
         ]);
     }
 
-    public function reports(Request $request)
+    public function reports(Request $request): Response
     {
-        $filters = $request->only(['period_id', 'meter_id', 'date', 'range_start', 'range_end']);
-
-        $query = ConsumptionRecord::with(['meter', 'period'])
-            ->where('status', 'approved');
-
-        // DATE FILTERS
-        if ($request->date === 'day') {
-            $query->whereDate('reading_date', today());
-        }
-
-        if ($request->date === 'week') {
-            $query->whereBetween('reading_date', [
-                now()->startOfWeek(),
-                now()->endOfWeek(),
-            ]);
-        }
-
-        if ($request->date === 'month') {
-            $query->whereMonth('reading_date', now()->month)
-                ->whereYear('reading_date', now()->year);
-        }
-
-        // CUSTOM RANGE
-        if ($request->filled('range_start') && $request->filled('range_end')) {
-            $query->whereBetween('reading_date', [
-                $request->range_start . " 00:00:00",
-                $request->range_end . " 23:59:59"
-            ]);
-        }
-
-        // PERIOD FILTER
-        if (!empty($request->period_id) && $request->period_id !== 'all') {
-            $query->where('period_id', $request->period_id);
-        }
-
-        // METER FILTER
-        if (!empty($request->meter_id) && $request->meter_id !== 'all') {
-            $query->where('meter_id', $request->meter_id);
-        }
-
-        $totals = (clone $query)
-            ->selectRaw('SUM(current_value) as total_value, SUM(total_amount) as total_amount')
-            ->first();
-
-        $records = $query->orderBy('reading_date', 'desc')->paginate(10)->withQueryString();
-
-        return Inertia::render('user/reports', [
-            'records' => $records,
-            'filters' => $filters,
-            'periods' => Period::all(),
-            'meters' => Meter::all(),
-            'totals' => $totals,
-        ]);
+        return Inertia::render('user/reports', ConsumptionReport::build($request));
     }
-
 }

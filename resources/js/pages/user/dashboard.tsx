@@ -1,156 +1,110 @@
-import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-
+import { UtilityTrendChart } from '@/components/eco/charts';
+import { PageHeader } from '@/components/eco/page-header';
+import { RecordsTable } from '@/components/eco/records-table';
+import { StatCard } from '@/components/eco/stat-card';
 import { Button } from '@/components/ui/button';
-import { Link } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
+import { formatNumber, useCurrency } from '@/lib/format';
+import { useT } from '@/lib/i18n';
+import {
+    type BreadcrumbItem,
+    type ConsumptionRecord,
+    type DailyPoint,
+} from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { Droplets, Gauge, Wallet, Zap } from 'lucide-react';
 
-type Entry = {
-    id: number;
-    current_value: number;
-    total_amount: number;
-    reading_date: string;
-    meter: { name: string };
-    period: { name: string };
-};
+interface Props {
+    stats: {
+        meters: number;
+        monthElectricity: number;
+        monthWater: number;
+        monthAmount: number;
+    };
+    daily: DailyPoint[];
+    recentEntries: ConsumptionRecord[];
+}
 
-type Props = {
-    totalMeters: number;
-    totalRecords: number;
-    pending: number;
-    approved: number;
-    recentEntries: Entry[];
-};
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/user/dashboard' }];
 
-export default function UserDashboard({
-    totalMeters,
-    totalRecords,
-    pending,
-    approved,
-    recentEntries,
-}: Props) {
+export default function UserDashboard({ stats, daily, recentEntries }: Props) {
+    const t = useT();
+    const currency = useCurrency();
+
     return (
-        <AppLayout>
-            <Head title="User Dashboard" />
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={t('Dashboard')} />
 
-            <div className="flex flex-col gap-6 p-4">
-                {/* ===== TOP CARDS ==== */}
-                <div className="grid gap-4 md:grid-cols-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Total Meters</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-3xl font-bold">{totalMeters}</p>
-                        </CardContent>
-                    </Card>
+            <div className="flex flex-col gap-6 p-4 sm:p-6">
+                <PageHeader
+                    title={t('Consumption overview')}
+                    description={t('Validated readings across the facility, updated as admins approve them.')}
+                />
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Total Records</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-3xl font-bold">{totalRecords}</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Pending</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-3xl font-bold text-yellow-600">
-                                {pending}
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Approved</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-3xl font-bold text-green-600">
-                                {approved}
-                            </p>
-                        </CardContent>
-                    </Card>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                    <StatCard
+                        label={t('Electricity this month')}
+                        value={formatNumber(stats.monthElectricity)}
+                        unit="kWh"
+                        icon={Zap}
+                        tone="electricity"
+                    />
+                    <StatCard
+                        label={t('Water this month')}
+                        value={formatNumber(stats.monthWater)}
+                        unit="m³"
+                        icon={Droplets}
+                        tone="water"
+                    />
+                    <StatCard
+                        label={t('Cost this month')}
+                        value={formatNumber(stats.monthAmount)}
+                        unit={currency}
+                        icon={Wallet}
+                        tone="success"
+                    />
+                    <StatCard label={t('Active meters')} value={stats.meters} icon={Gauge} />
                 </div>
 
-                {/* ===== RECENT ENTRIES ===== */}
-                <div className="rounded-xl border p-4">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h2 className="text-xl font-semibold">
-                            Recent Records
-                        </h2>
+                {/* Two small multiples — different units never share an axis. */}
+                <div className="grid gap-4 lg:grid-cols-2">
+                    <section className="rounded-xl border border-t-2 border-t-electricity/70 bg-card p-4 shadow-xs sm:p-5">
+                        <div className="mb-2 flex items-center gap-2">
+                            <Zap className="size-4 text-electricity" />
+                            <h2 className="font-semibold">
+                                {t('Electricity — last 30 days (kWh)')}
+                            </h2>
+                        </div>
+                        <UtilityTrendChart data={daily} type="electricity" />
+                    </section>
+                    <section className="rounded-xl border border-t-2 border-t-water/70 bg-card p-4 shadow-xs sm:p-5">
+                        <div className="mb-2 flex items-center gap-2">
+                            <Droplets className="size-4 text-water" />
+                            <h2 className="font-semibold">{t('Water — last 30 days (m³)')}</h2>
+                        </div>
+                        <UtilityTrendChart data={daily} type="water" />
+                    </section>
+                </div>
 
-                        <Button asChild>
-                            <Link href="/user/consumptions">View All</Link>
+                <section className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-semibold">
+                            {t('Recent approved readings')}
+                        </h2>
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href="/user/consumptions" prefetch>
+                                {t('View history')}
+                            </Link>
                         </Button>
                     </div>
-
-                    <div className="overflow-x-auto rounded-lg border">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Meter</TableHead>
-                                    <TableHead>Period</TableHead>
-                                    <TableHead>Value</TableHead>
-                                    <TableHead>Price</TableHead>
-                                    <TableHead>Date</TableHead>
-                                </TableRow>
-                            </TableHeader>
-
-                            <TableBody>
-                                {recentEntries.length === 0 && (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={5}
-                                            className="py-4 text-center"
-                                        >
-                                            No records found.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-
-                                {recentEntries.map((entry) => (
-                                    <TableRow
-                                        key={entry.id}
-                                        className="transition hover:bg-neutral-50 dark:hover:bg-neutral-900/40"
-                                    >
-                                        <TableCell>
-                                            {entry.meter.name}
-                                        </TableCell>
-                                        <TableCell>
-                                            {entry.period.name}
-                                        </TableCell>
-                                        <TableCell className="font-semibold">
-                                            {entry.current_value} Kw
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {entry.total_amount} MAD
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {new Date(entry.reading_date).toLocaleDateString()}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </div>
+                    <RecordsTable
+                        records={recentEntries}
+                        showStatus={false}
+                        linkFor={(r) => `/user/consumptions/${r.id}`}
+                        emptyTitle="Nothing approved yet"
+                        emptyDescription="Approved readings will show up here as soon as an admin validates them."
+                    />
+                </section>
             </div>
         </AppLayout>
     );

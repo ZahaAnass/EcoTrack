@@ -1,62 +1,32 @@
-import AppLayout from '@/layouts/app-layout'
-import { Head, useForm } from '@inertiajs/react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
+import { MeterForm } from '@/components/eco/meter-form';
+import { PageHeader } from '@/components/eco/page-header';
+import { useT } from '@/lib/i18n';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem, type Meter } from '@/types';
+import { Head } from '@inertiajs/react';
 
-export default function Edit({ meter }: any) {
-    const { data, setData, put, processing, errors } = useForm({
-        name: meter.name,
-        serial_number: meter.serial_number,
-        unit_price: meter.unit_price,
-    })
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/admin/dashboard' },
+    { title: 'Meters', href: '/admin/meters' },
+    { title: 'Edit meter', href: '#' },
+];
 
-    function submit(e: React.FormEvent) {
-        e.preventDefault()
-        put(route('admin.meters.update', meter.id))
-    }
+export default function EditMeter({ meter }: { meter: Meter }) {
+    const t = useT();
 
     return (
-        <AppLayout>
-            <Head title="Edit Meter" />
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={`Edit — ${meter.name}`} />
 
-            <Card className="m-4 max-w-xl">
-                <CardHeader>
-                    <CardTitle>Edit Meter</CardTitle>
-                </CardHeader>
-
-                <CardContent>
-                    <form onSubmit={submit} className="space-y-4">
-                        <div>
-                            <Label>Name</Label>
-                            <Input
-                                value={data.name}
-                                onChange={e => setData('name', e.target.value)}
-                            />
-                        </div>
-
-                        <div>
-                            <Label>Serial Number</Label>
-                            <Input
-                                value={data.serial_number}
-                                onChange={e => setData('serial_number', e.target.value)}
-                            />
-                        </div>
-
-                        <div>
-                            <Label>Unit Price (MAD)</Label>
-                            <Input
-                                type="number"
-                                value={data.unit_price}
-                                onChange={e => setData('unit_price', e.target.value)}
-                            />
-                        </div>
-
-                        <Button disabled={processing}>Update</Button>
-                    </form>
-                </CardContent>
-            </Card>
+            <div className="flex flex-col gap-6 p-4 sm:p-6">
+                <div className="flex w-full flex-col gap-6">
+                    <PageHeader
+                        title={`Edit ${meter.name}`}
+                        description={t('Changes apply to future readings; existing history keeps its snapshot.')}
+                    />
+                    <MeterForm meter={meter} />
+                </div>
+            </div>
         </AppLayout>
-    )
+    );
 }
